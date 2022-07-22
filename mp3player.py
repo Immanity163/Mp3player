@@ -67,18 +67,20 @@ class PLayer:
         mixer.music.stop()
 
     def next(self):
-        if self.music_file is not None:
+        if self.song_queue < len(self.directory_playlist) - 1:
             self.song_queue += 1
-            self.music_file = self.directory_playlist[self.song_queue]
-            self.play()
-            self.file_name_format()
+        else: self.song_queue = 0
+        if self.music_file is not None:
+            self.__play()
 
     def previous(self):
-        if self.music_file is not None:
+        if self.song_queue > 0:
             self.song_queue -= 1
-            self.music_file = self.directory_playlist[self.song_queue]
-            self.play()
-            self.file_name_format()
+        else:
+            self.song_queue = len(self.directory_playlist) - 1
+        if self.music_file is not None:
+            self.__play()
+
 
     def file_name_format(self):
         label_name = self.music_file.split(sep="/")[-1]
@@ -87,6 +89,12 @@ class PLayer:
             text=(lambda label_name:
                   label_name[:30] + "..." if (len(label_name) > 30) else label_name[:30])(label_name))
 
+    def __play(self):
+        self.music_file = self.directory_playlist[self.song_queue]
+        self.play()
+        self.playing_state = False
+        self.pause_button.configure(text="Pause")
+        self.file_name_format()
 
 win = Tk()
 app = PLayer(win)
